@@ -21,14 +21,14 @@ class Counter extends React.Component {
     score: 0
   };
   incrementScore = () => {
-    this.setState({
-      score: this.state.score + 1
-    });
+    this.setState(prevState => ({
+      score: prevState.score + 1
+    }));
   };
   decrementScore = () => {
-    this.setState({
-      score: this.state.score - 1
-    });
+    this.setState(prevState => ({
+      score: prevState.score - 1
+    }));
   };
   render() {
     return (
@@ -51,24 +51,52 @@ class Counter extends React.Component {
   }
 }
 
-const Player = ({ name, score }) => {
+const Player = props => {
   return (
     <div className='player'>
-      <span className='player-name'>{name}</span>
+      <span className='player-name'>
+        <button
+          className='remove-player'
+          onClick={() => props.removePlayer(props.id)}
+        >
+          x
+        </button>
+        {props.name}
+      </span>
       <Counter />
     </div>
   );
 };
-const App = props => {
-  return (
-    <div className='scoreboard'>
-      <Header title='Scoreboard' totalPlayers={props.initialPlayers.length} />
-      {/* Player list  */}
-      {props.initialPlayers.map(player => (
-        <Player key={player.id.toString()} name={player.name} />
-      ))}
-    </div>
-  );
-};
+class App extends React.Component {
+  state = {
+    players: [
+      { id: 1, name: 'Vinay' },
+      { id: 2, name: 'Tolu' },
+      { id: 3, name: 'Maleek' },
+      { id: 4, name: 'Abass' }
+    ]
+  };
+  handleRemovePlayer = id => {
+    this.setState(prevState => ({
+      players: prevState.players.filter(p => p.id !== id)
+    }));
+  };
+  render() {
+    return (
+      <div className='scoreboard'>
+        <Header title='Scoreboard' totalPlayers={this.state.players.length} />
+        {/* Player list  */}
+        {this.state.players.map(player => (
+          <Player
+            key={player.id.toString()}
+            id={player.id}
+            name={player.name}
+            removePlayer={this.handleRemovePlayer}
+          />
+        ))}
+      </div>
+    );
+  }
+}
 
 export default App;
